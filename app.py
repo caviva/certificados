@@ -10,6 +10,13 @@ df_global = None
 UPLOAD_FOLDER = "uploads"
 TEMPLATE_PATH = "plantilla/base.docx"
 
+# Función segura para formatear montos
+def formato_moneda(valor):
+    try:
+        return f"${float(valor):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    except:
+        return str(valor)
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     global df_global
@@ -38,17 +45,17 @@ def generar(row_id):
         "numero": str(row["numero"]),
         "identificacion": str(row["identificacion"]),
         "razón_social": row["razón_social"],
-        "valor": f"${row['valor']:,}".replace(",", "."),
+        "valor": formato_moneda(row["valor"]),
         "fecha_suscripcion": row["fecha_suscripcion"],
         "fecha_legalizacion": row["fecha_legalizacion"],
         "fecha_cdp": row["fecha_cdp"],
         "numero_cdp": str(row["numero_cdp"]),
         "cuenta_cdp": row["cuenta_cdp"],
-        "valor_cdp": f"${row['valor_cdp']:,}".replace(",", "."),
+        "valor_cdp": formato_moneda(row["valor_cdp"]),
         "fecha_rp": row["fecha_rp"],
         "numero_rp": str(row["numero_rp"]),
         "cuenta_rp": row["cuenta_rp"],
-        "valor_rp": f"${row['valor_rp']:,}".replace(",", "."),
+        "valor_rp": formato_moneda(row["valor_rp"]),
         "NOMBRE_SUPERVISOR": row["NOMBRE_SUPERVISOR"],
         "CARGO_SUPERVISOR": row["CARGO_SUPERVISOR"],
     }
