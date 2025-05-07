@@ -28,6 +28,25 @@
             background-color: #0b5ed7;
             border-color: #0a58ca;
         }
+        /* Estilos para controlar el ancho de las columnas */
+        .table th, .table td {
+            max-width: 150px;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+        /* Columnas específicas que necesitan ser más estrechas */
+        .col-cuenta {
+            max-width: 120px;
+        }
+        .col-fecha {
+            max-width: 100px;
+        }
+        .col-numero {
+            max-width: 80px;
+        }
+        .col-accion {
+            width: 120px;
+        }
     </style>
 </head>
 <body>
@@ -67,18 +86,20 @@
                                 <thead class="table-dark">
                                     <tr>
                                         {% for key in data[0].keys() %}
-                                        <th>{{ key }}</th>
+                                        <th class="{% if 'cuenta' in key.lower() %}col-cuenta{% elif 'fecha' in key.lower() %}col-fecha{% elif 'numero' in key.lower() %}col-numero{% endif %}">{{ key }}</th>
                                         {% endfor %}
-                                        <th class="text-center">Acción</th>
+                                        <th class="text-center col-accion">Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for row in data %}
                                     <tr>
-                                        {% for val in row.values() %}
-                                        <td>{{ val }}</td>
+                                        {% for key, val in row.items() %}
+                                        <td class="{% if 'cuenta' in key.lower() %}col-cuenta{% elif 'fecha' in key.lower() %}col-fecha{% elif 'numero' in key.lower() %}col-numero{% endif %}">
+                                            {{ val }}
+                                        </td>
                                         {% endfor %}
-                                        <td class="text-center">
+                                        <td class="text-center col-accion">
                                             <a href="/generar/{{ loop.index0 }}" class="btn btn-sm btn-primary">
                                                 <i class="fas fa-file-pdf me-1"></i>Generar PDF
                                             </a>
