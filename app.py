@@ -35,35 +35,62 @@ def generar(row_id):
     if df_global is None or row_id >= len(df_global):
         return "Registro no encontrado", 404
 
+    # Imprimir las columnas disponibles para depuración
+    print("Columnas disponibles:", df_global.columns.tolist())
+    
     row = df_global.iloc[row_id].fillna("")
-
+    
+    # Imprimir los valores específicos que no están funcionando
+    print(f"fecha_cdp: '{row.get('fecha_cdp', '')}'")
+    print(f"numero_cdp: '{row.get('numero_cdp', '')}'")
+    print(f"cuenta_cdp: '{row.get('cuenta_cdp', '')}'")
+    print(f"valor_cdp: '{row.get('valor_cdp', '')}'")
+    
     doc = Document(TEMPLATE_PATH)
 
+    # Asegurarse de que las claves coincidan con las columnas del Excel
+    # Convertir nombres de columnas a minúsculas para evitar problemas de mayúsculas/minúsculas
+    row_lower = {k.lower(): v for k, v in row.items()}
+    
     reemplazos = {
-        "modalidad": row.get("modalidad", ""),
-        "tipo_contratacion": row.get("tipo_contratacion", ""),
-        "numero": str(row.get("numero", "")),
-        "identificacion": str(row.get("identificacion", "")),
-        "razón_social": row.get("razón_social", ""),
-        "valor": formato_moneda(row.get("valor", 0)),
-        "fecha_suscripcion": row.get("fecha_suscripcion", ""),
-        "fecha_legalizacion": row.get("fecha_legalizacion", ""),
-        "fecha_cdp": row.get("fecha_cdp", ""),
-        "numero_cdp": str(row.get("numero_cdp", "")),
-        "cuenta_cdp": row.get("cuenta_cdp", ""),
-        "valor_cdp": formato_moneda(row.get("valor_cdp", 0)),
-        "fecha_rp": row.get("fecha_rp", ""),
-        "numero_rp": str(row.get("numero_rp", "")),
-        "cuenta_rp": row.get("cuenta_rp", ""),
-        "valor_rp": formato_moneda(row.get("valor_rp", 0)),
-        "NOMBRE_SUPERVISOR": row.get("NOMBRE_SUPERVISOR", ""),
-        "CARGO_SUPERVISOR": row.get("CARGO_SUPERVISOR", "")
+        "modalidad": row_lower.get("modalidad", ""),
+        "tipo_contratacion": row_lower.get("tipo_contratacion", ""),
+        "numero": str(row_lower.get("numero", "")),
+        "identificacion": str(row_lower.get("identificacion", "")),
+        "razón_social": row_lower.get("razón_social", ""),
+        "valor": formato_moneda(row_lower.get("valor", 0)),
+        "fecha_suscripcion": row_lower.get("fecha_suscripcion", ""),
+        "fecha_legalizacion": row_lower.get("fecha_legalizacion", ""),
+        "fecha_cdp": row_lower.get("fecha_cdp", ""),
+        "numero_cdp": str(row_lower.get("numero_cdp", "")),
+        "cuenta_cdp": row_lower.get("cuenta_cdp", ""),
+        "valor_cdp": formato_moneda(row_lower.get("valor_cdp", 0)),
+        "fecha_rp": row_lower.get("fecha_rp", ""),
+        "numero_rp": str(row_lower.get("numero_rp", "")),
+        "cuenta_rp": row_lower.get("cuenta_rp", ""),
+        "valor_rp": formato_moneda(row_lower.get("valor_rp", 0)),
+        "NOMBRE_SUPERVISOR": row_lower.get("nombre_supervisor", ""),
+        "CARGO_SUPERVISOR": row_lower.get("cargo_supervisor", "")
     }
-
+    
+    # Función mejorada para reemplazar texto en párrafos
+    def replace_text_in_paragraph(paragraph, key, value):
+        if f"«{key}»" in paragraph.text:
+            for run in paragraph.runs:
+                run.text = run.text.replace(f"«{key}»", str(value))
+    
+    # Reemplazar en todos los párrafos del documento
     for p in doc.paragraphs:
         for key, val in reemplazos.items():
-            if f"«{key}»" in p.text:
-                p.text = p.text.replace(f"«{key}»", str(val))
+            replace_text_in_paragraph(p, key, val)
+    
+    # Reemplazar en tablas
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for p in cell.paragraphs:
+                    for key, val in reemplazos.items():
+                        replace_text_in_paragraph(p, key, val)
 
     # Guardar .docx temporal
     tmp_dir = tempfile.gettempdir()
