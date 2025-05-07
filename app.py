@@ -40,24 +40,24 @@ def generar(row_id):
     doc = Document(TEMPLATE_PATH)
 
     reemplazos = {
-        "modalidad": row["modalidad"],
-        "tipo_contratacion": row["tipo_contratacion"],
-        "numero": str(row["numero"]),
-        "identificacion": str(row["identificacion"]),
-        "razón_social": row["razón_social"],
-        "valor": formato_moneda(row["valor"]),
-        "fecha_suscripcion": row["fecha_suscripcion"],
-        "fecha_legalizacion": row["fecha_legalizacion"],
-        "fecha_cdp": row["fecha_cdp"],
-        "numero_cdp": str(row["numero_cdp"]),
-        "cuenta_cdp": row["cuenta_cdp"],
-        "valor_cdp": formato_moneda(row["valor_cdp"]),
-        "fecha_rp": row["fecha_rp"],
-        "numero_rp": str(row["numero_rp"]),
-        "cuenta_rp": row["cuenta_rp"],
-        "valor_rp": formato_moneda(row["valor_rp"]),
-        "NOMBRE_SUPERVISOR": row["NOMBRE_SUPERVISOR"],
-        "CARGO_SUPERVISOR": row["CARGO_SUPERVISOR"],
+        "modalidad": row.get("modalidad", ""),
+        "tipo_contratacion": row.get("tipo_contratacion", ""),
+        "numero": str(row.get("numero", "")),
+        "identificacion": str(row.get("identificacion", "")),
+        "razón_social": row.get("razón_social", ""),
+        "valor": formato_moneda(row.get("valor", 0)),
+        "fecha_suscripcion": row.get("fecha_suscripcion", ""),
+        "fecha_legalizacion": row.get("fecha_legalizacion", ""),
+        "fecha_cdp": row.get("fecha_cdp", ""),
+        "numero_cdp": str(row.get("numero_cdp", "")),
+        "cuenta_cdp": row.get("cuenta_cdp", ""),
+        "valor_cdp": formato_moneda(row.get("valor_cdp", 0)),
+        "fecha_rp": row.get("fecha_rp", ""),
+        "numero_rp": str(row.get("numero_rp", "")),
+        "cuenta_rp": row.get("cuenta_rp", ""),
+        "valor_rp": formato_moneda(row.get("valor_rp", 0)),
+        "NOMBRE_SUPERVISOR": row.get("NOMBRE_SUPERVISOR", ""),
+        "CARGO_SUPERVISOR": row.get("CARGO_SUPERVISOR", "")
     }
 
     for p in doc.paragraphs:
